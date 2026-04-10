@@ -69,27 +69,79 @@ For complex topics, use layered explanations:
 - Practical details
 - Optional deep dive
 
+Workshop Narrative Philosophy (Code to Cloud course)
+This is the core design principle. Everything else serves this.
+
+This course is not a training. It is a workshop. A developer sits at their desk. Day by day they try to do the next natural thing. That thing is hard, or broken, or impossible without the right tool. They struggle. They learn the concept. They implement the solution. Then the next day starts.
+
+Every section follows this arc:
+1. The developer needs to do something natural ("app is ready, let's run it")
+2. They try. It is harder than expected - or flat out broken
+3. That struggle is the reason for the section
+4. The tool or concept is introduced as the solution - not as a topic to cover
+5. Teach just enough of the concept to implement. Not the full specification. Not all edge cases
+6. The trainee implements it themselves. That is the hands-on
+
+What this means when writing content:
+- Never introduce a tool or concept before the problem has been felt
+- The narrative thread connects every section. The end of one section sets up the next
+- "It works on my machine" (Section 3) leads naturally to "ok but how does my colleague run it" (Section 4) leads to "ok but nobody outside can reach it" (Section 5) - and so on
+- If a lecture feels like a list of topics, it is wrong. It should feel like the next step in a story
+- Depth is secondary to progression. Cover what is needed to move forward. Save depth for when it is blocking progress
+
 Training & Content Creation Guidelines
 When generating training materials, the agent must:
-- Adapt explanations to different skill levels (beginner → advanced)
-- Provide structured learning paths
+- Follow the Workshop Narrative Philosophy above - problem first, always
 - Include practical examples, diagrams (ASCII if needed), and exercises
-- Produce workshop‑ready modules such as:
-- Hands‑on labs
-- Step‑by‑step guides
-- Troubleshooting scenarios
-- Architecture walkthroughs
-- CI/CD demos
-- Kubernetes deployment exercises
+- Produce workshop-ready modules: hands-on labs, step-by-step guides, troubleshooting scenarios
 Training content must be:
 - Realistic
 - Actionable
 - Easy to follow
-- Suitable for live workshops or self‑paced learning
 Avoid:
-- Overly academic explanations
-- Unnecessary jargon
+- Introducing concepts before the problem that needs them
+- Teaching all the detail when partial knowledge is enough to proceed
+- Overly academic explanations or unnecessary jargon
 - Long theoretical sections without practical value
+
+Lecture Script Tone & Style (Code to Cloud course)
+All lecture scripts for this course must follow this voice and structure. This is non‑negotiable.
+
+Voice
+- Warm, direct, conversational — like a real person talking, not a textbook
+- Short sentences. If a sentence is long, break it
+- Simple vocabulary — the instructor is a non‑native English speaker recording in English
+- Never say "In this lecture we will learn..." or "By the end of this lecture you will be able to..."
+- Never list learning objectives. People signed up — just deliver the content
+- No academic framing. No convincing. No overselling
+- Never sell or hype a feature mid-script. No "this is one of the most useful things", no "once you use this you can't go back", no "get into the habit of X". Just show it and move on
+
+Structure
+- Every lecture opens on camera with a warm hello and a clear setup: what problem are we solving, why does this matter, what are we about to do — before touching any command or slide
+- Then switch to screen/terminal. Let the demo drive
+- Commands and concepts appear because they solve something — not as a list to cover
+- Transitions between topics must feel natural: "Now let's...", "Alright.", "One more thing.", "This is where it gets interesting."
+- End with a short bridge to the next lecture — one or two sentences, no summary recap
+
+Format
+- Markdown file
+- Metadata block at the top: estimated duration, camera notes, screen recording notes
+- Then `## SCRIPT`
+- Stage directions as `[ACTION: ...]` inline - not in a separate column
+- No `---` dividers between sections. The script flows as one piece
+- No mid-script headers like "### Navigation" or "### Permissions" - those turn it into a document
+- Never use em dashes (-). Use a regular hyphen (-) instead
+
+Reference example
+The Kubernetes Service lecture (Lecture 42/43 from Özgür's existing Udemy course) is the canonical tone reference.
+Key patterns from that example:
+- "Haydi lafı fazla uzatmadan..." → get to the point without preamble
+- Scenario first: "Imagine we built an app that does X..." — then the problem — then the solution
+- "Bakın..." / "Look at that..." — draw attention to what just happened on screen
+- "Şimdi..." / "Now..." — move naturally to the next thing
+- Real terminal output shown inline after the command
+- "Uzun lafın kısası..." / "The short version is..." — used to land a concept after explaining it
+- Demo is woven into narration — not a separate "demo section"
 
 Commit Rules
 The agent must automatically generate a commit after every meaningful and logically complete change.
