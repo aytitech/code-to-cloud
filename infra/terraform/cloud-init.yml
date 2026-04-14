@@ -1,0 +1,16 @@
+#cloud-config
+
+packages:
+  - curl
+  - ufw
+
+runcmd:
+  # TODO: install Docker using the official convenience script
+  # TODO: create the cloudmart user (disabled password, no gecos)
+  # TODO: add cloudmart to sudo and docker groups
+  # TODO: copy root's authorized_keys to /home/cloudmart/.ssh/
+  # TODO: set correct ownership and permissions on .ssh directory
+  # TODO: enable UFW and allow ports 22, 80, 443
+  # TODO: set UFW default policies (deny incoming, allow outgoing)
+  # TODO: enable and start Docker
+  # TODO: create the "proxy" Docker network
