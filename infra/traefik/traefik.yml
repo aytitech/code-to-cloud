@@ -1,0 +1,26 @@
+api:
+  dashboard: false
+
+# TODO: define your entrypoints
+# entryPoints:
+#   web:
+#     address: ":80"
+#     http:
+#       redirections:
+#         entryPoint:
+#           to: ???        <- which entrypoint should HTTP redirect to?
+#           scheme: ???    <- what scheme?
+#   websecure:
+#     address: ???        <- what port does HTTPS listen on?
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: your@email.com  # TODO: replace with your real email
+      storage: /acme.json
+      httpChallenge:
+        entryPoint: web
+
+providers:
+  docker:
+    exposedByDefault: false
