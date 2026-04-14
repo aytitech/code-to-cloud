@@ -16,12 +16,13 @@ locals {
   ])
 }
 
-# TODO: define the cloudflare_record resource
-# It should use for_each over local.subdomains and create one A record per subdomain.
-# Each record should:
-#   zone_id = var.cloudflare_zone_id
-#   name    = "${local.prefix}${each.value}"
-#   content = hcloud_server.cloudmart.ipv4_address   <- IP from the server resource
-#   type    = "A"
-#   ttl     = 60
-#   proxied = false
+resource "cloudflare_record" "cloudmart" {
+  for_each = local.subdomains
+
+  zone_id = var.cloudflare_zone_id
+  name    = "${local.prefix}${each.value}"
+  content = hcloud_server.cloudmart.ipv4_address
+  type    = "A"
+  ttl     = 60
+  proxied = false
+}

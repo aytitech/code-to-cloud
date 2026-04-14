@@ -5,12 +5,20 @@ packages:
   - ufw
 
 runcmd:
-  # TODO: install Docker using the official convenience script
-  # TODO: create the cloudmart user (disabled password, no gecos)
-  # TODO: add cloudmart to sudo and docker groups
-  # TODO: copy root's authorized_keys to /home/cloudmart/.ssh/
-  # TODO: set correct ownership and permissions on .ssh directory
-  # TODO: enable UFW and allow ports 22, 80, 443
-  # TODO: set UFW default policies (deny incoming, allow outgoing)
-  # TODO: enable and start Docker
-  # TODO: create the "proxy" Docker network
+  - curl -fsSL https://get.docker.com | sh
+  - adduser --disabled-password --gecos "" cloudmart
+  - usermod -aG sudo,docker cloudmart
+  - mkdir -p /home/cloudmart/.ssh
+  - cp /root/.ssh/authorized_keys /home/cloudmart/.ssh/
+  - chown -R cloudmart:cloudmart /home/cloudmart/.ssh
+  - chmod 700 /home/cloudmart/.ssh
+  - chmod 600 /home/cloudmart/.ssh/authorized_keys
+  - ufw --force enable
+  - ufw allow 22/tcp
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - systemctl enable docker
+  - systemctl start docker
+  - docker network create proxy

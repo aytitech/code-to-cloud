@@ -28,12 +28,12 @@ resource "hcloud_firewall" "cloudmart" {
   }
 }
 
-# TODO: define the hcloud_server resource
-# It should use:
-#   name         = "${var.environment}-cloudmart"
-#   image        = "ubuntu-24.04"
-#   server_type  = var.server_type
-#   location     = var.location
-#   ssh_keys     = [hcloud_ssh_key.default.id]
-#   firewall_ids = [hcloud_firewall.cloudmart.id]
-#   user_data    = file("${path.module}/cloud-init.yml")
+resource "hcloud_server" "cloudmart" {
+  name         = "${var.environment}-cloudmart"
+  image        = "ubuntu-24.04"
+  server_type  = var.server_type
+  location     = var.location
+  ssh_keys     = [hcloud_ssh_key.default.id]
+  firewall_ids = [hcloud_firewall.cloudmart.id]
+  user_data    = file("${path.module}/cloud-init.yml")
+}
