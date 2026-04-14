@@ -11,9 +11,8 @@ services:
       - ./acme.json:/acme.json
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
-      # TODO: add the "proxy" network here
+      - proxy
 
-# TODO: declare the networks block
-# networks:
-#   proxy:
-#     external: ???    <- should this be created here or already exist?
+networks:
+  proxy:
+    external: true
