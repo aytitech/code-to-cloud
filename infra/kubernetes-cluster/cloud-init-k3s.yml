@@ -5,8 +5,11 @@ packages:
   - ufw
 
 runcmd:
-  # TODO: install k3s (lightweight Kubernetes) using the official install script
-  #   curl -sfL https://get.k3s.io | sh -
-  # TODO: allow ports 22, 80, 443, and 6443 (Kubernetes API server) in UFW
-  # TODO: set UFW default policies (deny incoming, allow outgoing)
-  # TODO: enable UFW with --force flag
+  - curl -sfL https://get.k3s.io | sh -
+  - ufw allow 22/tcp
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw allow 6443/tcp
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw --force enable
