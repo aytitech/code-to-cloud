@@ -1,0 +1,12 @@
+#cloud-config
+
+packages:
+  - curl
+  - ufw
+
+runcmd:
+  # TODO: install k3s (lightweight Kubernetes) using the official install script
+  #   curl -sfL https://get.k3s.io | sh -
+  # TODO: allow ports 22, 80, 443, and 6443 (Kubernetes API server) in UFW
+  # TODO: set UFW default policies (deny incoming, allow outgoing)
+  # TODO: enable UFW with --force flag
