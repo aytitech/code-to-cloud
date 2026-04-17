@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: storefront
-  namespace: cloudmart
+  namespace: stackshop
 spec:
   replicas: 2
   selector:
@@ -40,12 +40,12 @@ spec:
             - name: INTERNAL_PRODUCT_SERVICE_URL
               valueFrom:
                 configMapKeyRef:
-                  name: cloudmart-config
+                  name: stackshop-config
                   key: PRODUCT_SERVICE_URL
             - name: INTERNAL_SEARCH_SERVICE_URL
               valueFrom:
                 configMapKeyRef:
-                  name: cloudmart-config
+                  name: stackshop-config
                   key: SEARCH_SERVICE_URL
           resources:
             requests:
@@ -59,7 +59,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: storefront
-  namespace: cloudmart
+  namespace: stackshop
 spec:
   selector:
     app: storefront

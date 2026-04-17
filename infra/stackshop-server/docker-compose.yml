@@ -1,4 +1,4 @@
-name: cloudmart
+name: stackshop
 
 services:
 
@@ -254,10 +254,10 @@ services:
       INTERNAL_SEARCH_SERVICE_URL: http://search-service:8005
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.cloudmart.rule=Host(`cloudmart.${DOMAIN}`)"
-      - "traefik.http.routers.cloudmart.entrypoints=websecure"
-      - "traefik.http.routers.cloudmart.tls.certresolver=letsencrypt"
-      - "traefik.http.services.cloudmart.loadbalancer.server.port=3000"
+      - "traefik.http.routers.stackshop.rule=Host(`stackshop.${DOMAIN}`)"
+      - "traefik.http.routers.stackshop.entrypoints=websecure"
+      - "traefik.http.routers.stackshop.tls.certresolver=letsencrypt"
+      - "traefik.http.services.stackshop.loadbalancer.server.port=3000"
     networks:
       - default
       - proxy

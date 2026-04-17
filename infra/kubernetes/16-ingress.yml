@@ -1,12 +1,12 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: cloudmart
-  namespace: cloudmart
+  name: stackshop
+  namespace: stackshop
 spec:
   ingressClassName: traefik
   rules:
-    - host: cloudmart.YOUR_DOMAIN
+    - host: stackshop.YOUR_DOMAIN
       http:
         paths:
           - path: /

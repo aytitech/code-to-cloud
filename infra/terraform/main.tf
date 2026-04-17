@@ -1,10 +1,10 @@
 resource "hcloud_ssh_key" "default" {
-  name       = "${var.environment}-cloudmart-key"
+  name       = "${var.environment}-stackshop-key"
   public_key = var.ssh_public_key
 }
 
-resource "hcloud_firewall" "cloudmart" {
-  name = "${var.environment}-cloudmart-fw"
+resource "hcloud_firewall" "stackshop" {
+  name = "${var.environment}-stackshop-fw"
 
   rule {
     direction  = "in"
@@ -28,12 +28,12 @@ resource "hcloud_firewall" "cloudmart" {
   }
 }
 
-resource "hcloud_server" "cloudmart" {
-  name         = "${var.environment}-cloudmart"
+resource "hcloud_server" "stackshop" {
+  name         = "${var.environment}-stackshop"
   image        = "ubuntu-24.04"
   server_type  = var.server_type
   location     = var.location
   ssh_keys     = [hcloud_ssh_key.default.id]
-  firewall_ids = [hcloud_firewall.cloudmart.id]
+  firewall_ids = [hcloud_firewall.stackshop.id]
   user_data    = file("${path.module}/cloud-init.yml")
 }

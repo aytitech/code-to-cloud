@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Build all CloudMart service images locally.
+# Build all StackShop service images locally.
 # Run this from the repo root.
 # Each image is tagged as <service>:dev
 
@@ -16,7 +16,7 @@ SERVICES=(
   storefront
 )
 
-echo "Building all CloudMart images..."
+echo "Building all StackShop images..."
 echo ""
 
 for svc in "${SERVICES[@]}"; do

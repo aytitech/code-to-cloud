@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cart-service
-  namespace: cloudmart
+  namespace: stackshop
 spec:
   replicas: 2
   selector:
@@ -24,12 +24,12 @@ spec:
             - name: REDIS_URL
               valueFrom:
                 configMapKeyRef:
-                  name: cloudmart-config
+                  name: stackshop-config
                   key: REDIS_URL
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: cloudmart-secrets
+                  name: stackshop-secrets
                   key: JWT_SECRET
           resources:
             requests:
@@ -43,7 +43,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: cart-service
-  namespace: cloudmart
+  namespace: stackshop
 spec:
   selector:
     app: cart-service

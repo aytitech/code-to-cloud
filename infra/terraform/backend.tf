@@ -6,7 +6,7 @@
 #     organization = "YOUR_TERRAFORM_CLOUD_ORG"
 #
 #     workspaces {
-#       tags = ["cloudmart"]
+#       tags = ["stackshop"]
 #     }
 #   }
 # }

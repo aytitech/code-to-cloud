@@ -26,7 +26,7 @@ export default async function HomePage() {
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
       <header className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-indigo-600">CloudMart</h1>
+        <h1 className="text-3xl font-bold text-indigo-600">StackShop</h1>
         <nav className="flex gap-4 text-sm">
           <Link href="/cart" className="hover:text-indigo-600">Cart</Link>
           <Link href="/orders" className="hover:text-indigo-600">Orders</Link>

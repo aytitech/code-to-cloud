@@ -1,5 +1,5 @@
 #!/bin/bash
-# CloudMart seed script - populates the app with realistic demo data
+# StackShop seed script - populates the app with realistic demo data
 # Run after `docker compose up --build` when all services are healthy
 
 set -euo pipefail

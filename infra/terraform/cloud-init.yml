@@ -6,13 +6,13 @@ packages:
 
 runcmd:
   - curl -fsSL https://get.docker.com | sh
-  - adduser --disabled-password --gecos "" cloudmart
-  - usermod -aG sudo,docker cloudmart
-  - mkdir -p /home/cloudmart/.ssh
-  - cp /root/.ssh/authorized_keys /home/cloudmart/.ssh/
-  - chown -R cloudmart:cloudmart /home/cloudmart/.ssh
-  - chmod 700 /home/cloudmart/.ssh
-  - chmod 600 /home/cloudmart/.ssh/authorized_keys
+  - adduser --disabled-password --gecos "" stackshop
+  - usermod -aG sudo,docker stackshop
+  - mkdir -p /home/stackshop/.ssh
+  - cp /root/.ssh/authorized_keys /home/stackshop/.ssh/
+  - chown -R stackshop:stackshop /home/stackshop/.ssh
+  - chmod 700 /home/stackshop/.ssh
+  - chmod 600 /home/stackshop/.ssh/authorized_keys
   - ufw --force enable
   - ufw allow 22/tcp
   - ufw allow 80/tcp

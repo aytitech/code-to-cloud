@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: order-service
-  namespace: cloudmart
+  namespace: stackshop
 spec:
   replicas: 2
   selector:
@@ -22,12 +22,12 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: cloudmart-secrets
+                  name: stackshop-secrets
                   key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: cloudmart-secrets
+                  name: stackshop-secrets
                   key: POSTGRES_PASSWORD
             - name: PORT
               value: "8003"
@@ -36,17 +36,17 @@ spec:
             - name: KAFKA_BROKERS
               valueFrom:
                 configMapKeyRef:
-                  name: cloudmart-config
+                  name: stackshop-config
                   key: KAFKA_BROKERS
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: cloudmart-secrets
+                  name: stackshop-secrets
                   key: JWT_SECRET
             - name: PRODUCT_SERVICE_URL
               valueFrom:
                 configMapKeyRef:
-                  name: cloudmart-config
+                  name: stackshop-config
                   key: PRODUCT_SERVICE_URL
           resources:
             requests:
@@ -60,7 +60,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: order-service
-  namespace: cloudmart
+  namespace: stackshop
 spec:
   selector:
     app: order-service

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Tag and push all CloudMart images to ghcr.io.
+# Tag and push all StackShop images to ghcr.io.
 # Run this from the repo root after building with build-all.sh.
 #
 # Usage:
@@ -35,7 +35,7 @@ SERVICES=(
   storefront
 )
 
-echo "Pushing all CloudMart images to ghcr.io/$GITHUB_USER"
+echo "Pushing all StackShop images to ghcr.io/$GITHUB_USER"
 echo "SHA: $SHA"
 echo ""
 
