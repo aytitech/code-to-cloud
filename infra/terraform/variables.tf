@@ -23,7 +23,7 @@ variable "environment" {
 variable "server_type" {
   description = "Hetzner server type."
   type        = string
-  default     = "cx22"
+  default     = "cpx32"
 }
 
 variable "location" {

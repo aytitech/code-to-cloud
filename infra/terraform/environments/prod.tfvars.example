@@ -5,7 +5,7 @@
 # as environment variables: TF_VAR_hetzner_token, etc.
 
 environment        = "prod"
-server_type        = "cx22"
+server_type        = "cpx32"
 location           = "nbg1"
 cloudflare_zone_id = "YOUR_CLOUDFLARE_ZONE_ID"
 domain             = "yourdomain.xyz"
