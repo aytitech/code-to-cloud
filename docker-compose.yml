@@ -1,0 +1,162 @@
+name: stackshop
+
+services:
+
+  # ── Infrastructure ─────────────────────────────────────────────────────────
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sh:/docker-entrypoint-initdb.d/init.sh
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mongodb:
+    image: mongo:7
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_4LW_COMMANDS_WHITELIST: "ruok,srvr,stat"
+    healthcheck:
+      test: ["CMD-SHELL", "echo srvr | nc localhost 2181 | grep -q Mode"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  elasticsearch:
+    image: elasticsearch:8.13.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health | grep -v '\"status\":\"red\"'"]
+      interval: 10s
+      timeout: 10s
+      retries: 15
+
+  # ── Application Services ───────────────────────────────────────────────────
+  #
+  # Your job: add all 8 application services below.
+  # All services use `build: ./app/<service-name>`.
+  # All depends_on entries use `condition: service_healthy`.
+  #
+  # ─── user-service ──────────────────────────────────────────────────────────
+  #   ports:      8001:8001
+  #   env:        PORT=8001
+  #               DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/users?sslmode=disable
+  #               JWT_SECRET=${JWT_SECRET}
+  #   depends_on: postgres
+  #
+  # ─── product-service ───────────────────────────────────────────────────────
+  #   ports:      8002:8002
+  #   env:        PORT=8002
+  #               DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/products?sslmode=disable
+  #               MONGO_URL=mongodb://mongodb:27017
+  #               MONGO_DB=stackshop
+  #               KAFKA_BROKERS=kafka:9092
+  #               JWT_SECRET=${JWT_SECRET}
+  #   depends_on: postgres, mongodb, kafka
+  #
+  # ─── order-service ─────────────────────────────────────────────────────────
+  #   ports:      8003:8003
+  #   env:        PORT=8003
+  #               DB_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/orders
+  #               KAFKA_BROKERS=kafka:9092
+  #               JWT_SECRET=${JWT_SECRET}
+  #               PRODUCT_SERVICE_URL=http://product-service:8002
+  #   depends_on: postgres, kafka
+  #
+  # ─── cart-service ──────────────────────────────────────────────────────────
+  #   ports:      8004:8004
+  #   env:        PORT=8004
+  #               REDIS_URL=redis://redis:6379
+  #               JWT_SECRET=${JWT_SECRET}
+  #   depends_on: redis
+  #
+  # ─── notification-service ──────────────────────────────────────────────────
+  #   (no ports)
+  #   env:        KAFKA_BROKERS=kafka:9092
+  #   depends_on: kafka
+  #
+  # ─── search-service ────────────────────────────────────────────────────────
+  #   ports:      8005:8005
+  #   env:        PORT=8005
+  #               ELASTICSEARCH_URL=http://elasticsearch:9200
+  #               KAFKA_BROKERS=kafka:9092
+  #   depends_on: elasticsearch, kafka
+  #
+  # ─── review-service ────────────────────────────────────────────────────────
+  #   ports:      8006:8006
+  #   env:        PORT=8006
+  #               MONGO_URL=mongodb://mongodb:27017
+  #               MONGO_DB=stackshop
+  #               JWT_SECRET=${JWT_SECRET}
+  #   depends_on: mongodb
+  #
+  # ─── storefront ────────────────────────────────────────────────────────────
+  #   ports:      3000:3000
+  #   env:        NEXT_PUBLIC_USER_SERVICE_URL=http://localhost:8001
+  #               NEXT_PUBLIC_PRODUCT_SERVICE_URL=http://localhost:8002
+  #               NEXT_PUBLIC_ORDER_SERVICE_URL=http://localhost:8003
+  #               NEXT_PUBLIC_CART_SERVICE_URL=http://localhost:8004
+  #               NEXT_PUBLIC_SEARCH_SERVICE_URL=http://localhost:8005
+  #               NEXT_PUBLIC_REVIEW_SERVICE_URL=http://localhost:8006
+  #               INTERNAL_PRODUCT_SERVICE_URL=http://product-service:8002
+  #               INTERNAL_SEARCH_SERVICE_URL=http://search-service:8005
+  #   depends_on: user-service, product-service, order-service,
+  #               cart-service, search-service, review-service
+  #               (no condition - simple list)
+  #
+  # ─────────────────────────────────────────────────────────────────────────────
+
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:
+  es_data:

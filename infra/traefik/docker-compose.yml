@@ -1,0 +1,19 @@
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./traefik.yml:/traefik.yml:ro
+      - ./acme.json:/acme.json
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      # TODO: add the "proxy" network here
+
+# TODO: declare the networks block
+# networks:
+#   proxy:
+#     external: ???    <- should this be created here or already exist?

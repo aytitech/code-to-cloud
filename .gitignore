@@ -1,8 +1,4 @@
-# Instructor & course design materials — not for students
 _instructor/
+AGENTS.md
+.env
 
-# Temporary compose file — will be added properly in Module 5
-docker-compose.yml
-
-# Dockerfiles — will be added properly in Module 3
-**/Dockerfile
