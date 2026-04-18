@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Tag and push all StackShop images to ghcr.io.
-# Run this from the repo root after building with build-all.sh.
+# Build and push all StackShop images to ghcr.io using Docker buildx.
+# Produces multi-platform images (linux/amd64 + linux/arm64) and pushes directly.
+# Run this from the repo root.
 #
 # Usage:
 #   export GITHUB_USER=your-github-username
@@ -35,17 +36,27 @@ SERVICES=(
   storefront
 )
 
-echo "Pushing all StackShop images to ghcr.io/$GITHUB_USER"
+# Ensure a multi-platform builder is active
+if ! docker buildx inspect multiplatform &>/dev/null; then
+  docker buildx create --name multiplatform --use
+else
+  docker buildx use multiplatform
+fi
+
+echo "Building and pushing all StackShop images to ghcr.io/$GITHUB_USER"
+echo "Platforms: linux/amd64, linux/arm64"
 echo "SHA: $SHA"
 echo ""
 
 for svc in "${SERVICES[@]}"; do
   echo "--- $svc ---"
-  docker tag "$svc:dev" "ghcr.io/$GITHUB_USER/$svc:$SHA"
-  docker tag "$svc:dev" "ghcr.io/$GITHUB_USER/$svc:latest"
-  docker push "ghcr.io/$GITHUB_USER/$svc:$SHA"
-  docker push "ghcr.io/$GITHUB_USER/$svc:latest"
+  docker buildx build \
+    --platform linux/amd64,linux/arm64 \
+    --tag "ghcr.io/$GITHUB_USER/$svc:$SHA" \
+    --tag "ghcr.io/$GITHUB_USER/$svc:latest" \
+    --push \
+    "./app/$svc"
   echo ""
 done
 
-echo "Done. All images pushed as :$SHA and :latest"
+echo "Done. All images built and pushed as :$SHA and :latest"
