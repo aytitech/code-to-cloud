@@ -81,79 +81,121 @@ services:
       retries: 15
 
   # ── Application Services ───────────────────────────────────────────────────
-  #
-  # Your job: add all 8 application services below.
-  # All services use `build: ./app/<service-name>`.
-  # All depends_on entries use `condition: service_healthy`.
-  #
-  # ─── user-service ──────────────────────────────────────────────────────────
-  #   ports:      8001:8001
-  #   env:        PORT=8001
-  #               DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/users?sslmode=disable
-  #               JWT_SECRET=${JWT_SECRET}
-  #   depends_on: postgres
-  #
-  # ─── product-service ───────────────────────────────────────────────────────
-  #   ports:      8002:8002
-  #   env:        PORT=8002
-  #               DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/products?sslmode=disable
-  #               MONGO_URL=mongodb://mongodb:27017
-  #               MONGO_DB=stackshop
-  #               KAFKA_BROKERS=kafka:9092
-  #               JWT_SECRET=${JWT_SECRET}
-  #   depends_on: postgres, mongodb, kafka
-  #
-  # ─── order-service ─────────────────────────────────────────────────────────
-  #   ports:      8003:8003
-  #   env:        PORT=8003
-  #               DB_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/orders
-  #               KAFKA_BROKERS=kafka:9092
-  #               JWT_SECRET=${JWT_SECRET}
-  #               PRODUCT_SERVICE_URL=http://product-service:8002
-  #   depends_on: postgres, kafka
-  #
-  # ─── cart-service ──────────────────────────────────────────────────────────
-  #   ports:      8004:8004
-  #   env:        PORT=8004
-  #               REDIS_URL=redis://redis:6379
-  #               JWT_SECRET=${JWT_SECRET}
-  #   depends_on: redis
-  #
-  # ─── notification-service ──────────────────────────────────────────────────
-  #   (no ports)
-  #   env:        KAFKA_BROKERS=kafka:9092
-  #   depends_on: kafka
-  #
-  # ─── search-service ────────────────────────────────────────────────────────
-  #   ports:      8005:8005
-  #   env:        PORT=8005
-  #               ELASTICSEARCH_URL=http://elasticsearch:9200
-  #               KAFKA_BROKERS=kafka:9092
-  #   depends_on: elasticsearch, kafka
-  #
-  # ─── review-service ────────────────────────────────────────────────────────
-  #   ports:      8006:8006
-  #   env:        PORT=8006
-  #               MONGO_URL=mongodb://mongodb:27017
-  #               MONGO_DB=stackshop
-  #               JWT_SECRET=${JWT_SECRET}
-  #   depends_on: mongodb
-  #
-  # ─── storefront ────────────────────────────────────────────────────────────
-  #   ports:      3000:3000
-  #   env:        NEXT_PUBLIC_USER_SERVICE_URL=http://localhost:8001
-  #               NEXT_PUBLIC_PRODUCT_SERVICE_URL=http://localhost:8002
-  #               NEXT_PUBLIC_ORDER_SERVICE_URL=http://localhost:8003
-  #               NEXT_PUBLIC_CART_SERVICE_URL=http://localhost:8004
-  #               NEXT_PUBLIC_SEARCH_SERVICE_URL=http://localhost:8005
-  #               NEXT_PUBLIC_REVIEW_SERVICE_URL=http://localhost:8006
-  #               INTERNAL_PRODUCT_SERVICE_URL=http://product-service:8002
-  #               INTERNAL_SEARCH_SERVICE_URL=http://search-service:8005
-  #   depends_on: user-service, product-service, order-service,
-  #               cart-service, search-service, review-service
-  #               (no condition - simple list)
-  #
-  # ─────────────────────────────────────────────────────────────────────────────
+
+  user-service:
+    build: ./app/user-service
+    ports:
+      - "8001:8001"
+    environment:
+      PORT: "8001"
+      DB_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/users?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  product-service:
+    build: ./app/product-service
+    ports:
+      - "8002:8002"
+    environment:
+      PORT: "8002"
+      DB_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/products?sslmode=disable
+      MONGO_URL: mongodb://mongodb:27017
+      MONGO_DB: stackshop
+      KAFKA_BROKERS: kafka:9092
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  order-service:
+    build: ./app/order-service
+    ports:
+      - "8003:8003"
+    environment:
+      PORT: "8003"
+      DB_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/orders
+      KAFKA_BROKERS: kafka:9092
+      JWT_SECRET: ${JWT_SECRET}
+      PRODUCT_SERVICE_URL: http://product-service:8002
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  cart-service:
+    build: ./app/cart-service
+    ports:
+      - "8004:8004"
+    environment:
+      PORT: "8004"
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  notification-service:
+    build: ./app/notification-service
+    environment:
+      KAFKA_BROKERS: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  search-service:
+    build: ./app/search-service
+    ports:
+      - "8005:8005"
+    environment:
+      PORT: "8005"
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      KAFKA_BROKERS: kafka:9092
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  review-service:
+    build: ./app/review-service
+    ports:
+      - "8006:8006"
+    environment:
+      PORT: "8006"
+      MONGO_URL: mongodb://mongodb:27017
+      MONGO_DB: stackshop
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  storefront:
+    build: ./app/storefront
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_USER_SERVICE_URL: http://localhost:8001
+      NEXT_PUBLIC_PRODUCT_SERVICE_URL: http://localhost:8002
+      NEXT_PUBLIC_ORDER_SERVICE_URL: http://localhost:8003
+      NEXT_PUBLIC_CART_SERVICE_URL: http://localhost:8004
+      NEXT_PUBLIC_SEARCH_SERVICE_URL: http://localhost:8005
+      NEXT_PUBLIC_REVIEW_SERVICE_URL: http://localhost:8006
+      INTERNAL_PRODUCT_SERVICE_URL: http://product-service:8002
+      INTERNAL_SEARCH_SERVICE_URL: http://search-service:8005
+    depends_on:
+      - user-service
+      - product-service
+      - order-service
+      - cart-service
+      - search-service
+      - review-service
 
 volumes:
   postgres_data:
