@@ -16,7 +16,7 @@ func Load() *Config {
 		Port:         getEnv("PORT", "8002"),
 		DatabaseURL:  getEnv("DB_URL", "postgres://postgres:postgres@localhost:5432/products?sslmode=disable"),
 		MongoURL:     getEnv("MONGO_URL", "mongodb://localhost:27017"),
-		MongoDB:      getEnv("MONGO_DB", "cloudmart"),
+		MongoDB:      getEnv("MONGO_DB", "stackshop"),
 		KafkaBrokers: getEnv("KAFKA_BROKERS", "localhost:9092"),
 		JWTSecret:    getEnv("JWT_SECRET", "changeme-dev-secret"),
 	}
