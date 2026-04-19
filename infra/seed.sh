@@ -17,7 +17,18 @@ err()   { echo "[ERROR] $*" >&2; exit 1; }
 
 post() {
   local url="$1" data="$2" token="${3:-}"
-  local args=(-s -X POST "$url" -H "Content-Type: application/json" -d "$data")
+  local args=(
+    -s
+    --connect-timeout 5
+    --max-time 20
+    --retry 2
+    --retry-delay 1
+    --retry-all-errors
+    -X POST
+    "$url"
+    -H "Content-Type: application/json"
+    -d "$data"
+  )
   [[ -n "$token" ]] && args+=(-H "Authorization: Bearer $token")
   curl "${args[@]}"
 }
@@ -109,7 +120,17 @@ info "Creating reviews..."
 
 create_review() {
   local token="$1" product_id="$2" data="$3"
-  post "$REVIEW_SVC/$product_id/reviews" "$data" "$token" > /dev/null
+  local url="$REVIEW_SVC/$product_id/reviews"
+
+  for i in $(seq 1 3); do
+    if post "$url" "$data" "$token" > /dev/null; then
+      return
+    fi
+    info "Review request failed (attempt $i/3), retrying..."
+    sleep 2
+  done
+
+  err "Failed to create review for product_id=$product_id"
 }
 
 create_review "$TOKEN_BOB"   "$P1" '{"rating":5,"comment":"Incredible sound quality. The ANC is impressive and battery life is exactly as advertised."}'

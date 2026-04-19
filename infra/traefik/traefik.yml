@@ -24,3 +24,5 @@ certificatesResolvers:
 providers:
   docker:
     exposedByDefault: false
+
+accessLog: {}
