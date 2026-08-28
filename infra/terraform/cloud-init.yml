@@ -1,0 +1,26 @@
+#cloud-config
+
+packages:
+  - curl
+  - ufw
+
+runcmd:
+  - curl -fsSL https://get.docker.com | sh
+  - adduser --disabled-password --gecos "" stackshop
+  - usermod -aG sudo,docker stackshop
+  - echo "stackshop ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/stackshop
+  - chmod 440 /etc/sudoers.d/stackshop
+  - mkdir -p /home/stackshop/.ssh
+  - cp /root/.ssh/authorized_keys /home/stackshop/.ssh/
+  - chown -R stackshop:stackshop /home/stackshop/.ssh
+  - chmod 700 /home/stackshop/.ssh
+  - chmod 600 /home/stackshop/.ssh/authorized_keys
+  - ufw --force enable
+  - ufw allow 22/tcp
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - systemctl enable docker
+  - systemctl start docker
+  - docker network create proxy
