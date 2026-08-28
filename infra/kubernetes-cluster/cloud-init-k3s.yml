@@ -1,0 +1,31 @@
+#cloud-config
+
+packages:
+  - curl
+  - ufw
+
+runcmd:
+  - mkdir -p /var/lib/rancher/k3s/server/manifests
+  - |
+    cat > /var/lib/rancher/k3s/server/manifests/k3s-traefik-config.yaml <<'EOF'
+    apiVersion: helm.cattle.io/v1
+    kind: HelmChartConfig
+    metadata:
+      name: traefik
+      namespace: kube-system
+    spec:
+      valuesContent: |-
+        providers:
+          kubernetesGateway:
+            enabled: true
+        gateway:
+          enabled: false
+    EOF
+  - curl -sfL https://get.k3s.io | sh -
+  - ufw allow 22/tcp
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw allow 6443/tcp
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw --force enable
