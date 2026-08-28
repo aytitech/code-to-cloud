@@ -99,20 +99,15 @@ services:
       DB_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/users?sslmode=disable
       JWT_SECRET: ${JWT_SECRET}
       PORT: 8001
-    ports:
-      - "8001:8001"
-    # Traefik - next lecture. Remove the ports above, then uncomment and
-    # adjust this block for every service. Change the router name, the path,
-    # and the port. Attach each service to the "proxy" network too.
-    # labels:
-    #   - "traefik.enable=true"
-    #   - "traefik.http.routers.user.rule=Host(`${DOMAIN}`) && PathPrefix(`/api/users`)"
-    #   - "traefik.http.routers.user.entrypoints=websecure"
-    #   - "traefik.http.routers.user.tls.certresolver=letsencrypt"
-    #   - "traefik.http.services.user.loadbalancer.server.port=8001"
-    # networks:
-    #   - default
-    #   - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user.rule=Host(`${DOMAIN}`) && PathPrefix(`/api/users`)"
+      - "traefik.http.routers.user.entrypoints=websecure"
+      - "traefik.http.routers.user.tls.certresolver=letsencrypt"
+      - "traefik.http.services.user.loadbalancer.server.port=8001"
+    networks:
+      - default
+      - proxy
 
   product-service:
     image: ${REGISTRY}/product-service:latest
@@ -131,8 +126,15 @@ services:
       KAFKA_BROKERS: kafka:9092
       JWT_SECRET: ${JWT_SECRET}
       PORT: 8002
-    ports:
-      - "8002:8002"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.product.rule=Host(`${DOMAIN}`) && PathPrefix(`/api/products`)"
+      - "traefik.http.routers.product.entrypoints=websecure"
+      - "traefik.http.routers.product.tls.certresolver=letsencrypt"
+      - "traefik.http.services.product.loadbalancer.server.port=8002"
+    networks:
+      - default
+      - proxy
 
   order-service:
     image: ${REGISTRY}/order-service:latest
@@ -148,8 +150,15 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       PRODUCT_SERVICE_URL: http://product-service:8002
       PORT: 8003
-    ports:
-      - "8003:8003"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.order.rule=Host(`${DOMAIN}`) && PathPrefix(`/api/orders`)"
+      - "traefik.http.routers.order.entrypoints=websecure"
+      - "traefik.http.routers.order.tls.certresolver=letsencrypt"
+      - "traefik.http.services.order.loadbalancer.server.port=8003"
+    networks:
+      - default
+      - proxy
 
   cart-service:
     image: ${REGISTRY}/cart-service:latest
@@ -161,8 +170,15 @@ services:
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET}
       PORT: 8004
-    ports:
-      - "8004:8004"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cart.rule=Host(`${DOMAIN}`) && PathPrefix(`/api/cart`)"
+      - "traefik.http.routers.cart.entrypoints=websecure"
+      - "traefik.http.routers.cart.tls.certresolver=letsencrypt"
+      - "traefik.http.services.cart.loadbalancer.server.port=8004"
+    networks:
+      - default
+      - proxy
 
   search-service:
     image: ${REGISTRY}/search-service:latest
@@ -176,8 +192,15 @@ services:
       ELASTICSEARCH_URL: http://elasticsearch:9200
       KAFKA_BROKERS: kafka:9092
       PORT: 8005
-    ports:
-      - "8005:8005"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.search.rule=Host(`${DOMAIN}`) && PathPrefix(`/api/search`)"
+      - "traefik.http.routers.search.entrypoints=websecure"
+      - "traefik.http.routers.search.tls.certresolver=letsencrypt"
+      - "traefik.http.services.search.loadbalancer.server.port=8005"
+    networks:
+      - default
+      - proxy
 
   notification-service:
     image: ${REGISTRY}/notification-service:latest
@@ -199,8 +222,15 @@ services:
       MONGO_DB: stackshop
       JWT_SECRET: ${JWT_SECRET}
       PORT: 8006
-    ports:
-      - "8006:8006"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.review.rule=Host(`${DOMAIN}`) && PathRegexp(`^/api/products/[^/]+/reviews($|/)`)"
+      - "traefik.http.routers.review.entrypoints=websecure"
+      - "traefik.http.routers.review.tls.certresolver=letsencrypt"
+      - "traefik.http.services.review.loadbalancer.server.port=8006"
+    networks:
+      - default
+      - proxy
 
   storefront:
     image: ${REGISTRY}/storefront:latest
@@ -213,19 +243,34 @@ services:
       - search-service
       - review-service
     environment:
-      NEXT_PUBLIC_USER_SERVICE_URL: http://${SERVER_IP}:8001
-      NEXT_PUBLIC_PRODUCT_SERVICE_URL: http://${SERVER_IP}:8002
-      NEXT_PUBLIC_ORDER_SERVICE_URL: http://${SERVER_IP}:8003
-      NEXT_PUBLIC_CART_SERVICE_URL: http://${SERVER_IP}:8004
-      NEXT_PUBLIC_SEARCH_SERVICE_URL: http://${SERVER_IP}:8005
-      NEXT_PUBLIC_REVIEW_SERVICE_URL: http://${SERVER_IP}:8006
+      NEXT_PUBLIC_USER_SERVICE_URL: https://${DOMAIN}
+      NEXT_PUBLIC_PRODUCT_SERVICE_URL: https://${DOMAIN}
+      NEXT_PUBLIC_ORDER_SERVICE_URL: https://${DOMAIN}
+      NEXT_PUBLIC_CART_SERVICE_URL: https://${DOMAIN}
+      NEXT_PUBLIC_SEARCH_SERVICE_URL: https://${DOMAIN}
+      NEXT_PUBLIC_REVIEW_SERVICE_URL: https://${DOMAIN}
       INTERNAL_PRODUCT_SERVICE_URL: http://product-service:8002
       INTERNAL_SEARCH_SERVICE_URL: http://search-service:8005
-    ports:
-      - "3000:3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.stackshop.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.stackshop.entrypoints=websecure"
+      - "traefik.http.routers.stackshop.tls.certresolver=letsencrypt"
+      - "traefik.http.services.stackshop.loadbalancer.server.port=3000"
+      - "traefik.http.routers.www.rule=Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.www.entrypoints=websecure"
+      - "traefik.http.routers.www.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.www.middlewares=www-redirect"
+      - "traefik.http.middlewares.www-redirect.redirectregex.regex=^https://www.${DOMAIN}/(.*)"
+      - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://${DOMAIN}/$${1}"
+    networks:
+      - default
+      - proxy
 
 networks:
   default:
+  proxy:
+    external: true
 
 volumes:
   postgres_data:
