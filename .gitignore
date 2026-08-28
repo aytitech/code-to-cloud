@@ -1,0 +1,12 @@
+_instructor/
+AGENTS.md
+.env
+
+# Terraform - local state and secret variable files
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+.terraform.lock.hcl
+
