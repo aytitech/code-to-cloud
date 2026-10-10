@@ -1,0 +1,14 @@
+# TODO: write this workflow.
+#
+# It runs after the CI workflow finishes successfully on main,
+# then deploys StackShop to the cluster with the freshly built image.
+#
+# The steps:
+#   - check out the code
+#   - install Helm on the runner
+#   - write the kubeconfig from the KUBECONFIG secret to ~/.kube/config
+#   - helm upgrade the stackshop chart, overriding image.tag with the
+#     short commit SHA and image.username with the repo owner
+#
+# Look at ci.yml. It is the first half of the pipeline.
+# This file is the second half.
