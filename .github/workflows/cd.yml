@@ -1,14 +1,34 @@
-# TODO: write this workflow.
-#
-# It runs after the CI workflow finishes successfully on main,
-# then deploys StackShop to the cluster with the freshly built image.
-#
-# The steps:
-#   - check out the code
-#   - install Helm on the runner
-#   - write the kubeconfig from the KUBECONFIG secret to ~/.kube/config
-#   - helm upgrade the stackshop chart, overriding image.tag with the
-#     short commit SHA and image.username with the repo owner
-#
-# Look at ci.yml. It is the first half of the pipeline.
-# This file is the second half.
+name: CD
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  deploy:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        run: curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Write kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+
+      - name: Deploy with Helm
+        env:
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          helm upgrade stackshop infra/helm/stackshop/ \
+            --namespace stackshop \
+            -f infra/helm/stackshop/values-dev.yaml \
+            --set image.tag=${SHA::8} \
+            --set image.username=${{ github.repository_owner }}
+
