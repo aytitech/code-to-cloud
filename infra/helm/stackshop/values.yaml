@@ -1,0 +1,103 @@
+# StackShop chart - default values.
+# Shared by every environment. Environment files override what differs.
+
+image:
+  registry: ghcr.io
+  username: YOUR_GITHUB_USERNAME
+  tag: latest
+
+namespace: stackshop
+domain: yourdomain.xyz
+
+configMapName: stackshop-config
+secretName: stackshop-secrets
+
+secrets:
+  postgresUser: stackshop
+  postgresPassword: change-me
+  jwtSecret: change-me
+
+# One entry per service. env lists the values that differ from the shared
+# config and secret, which every container receives via envFrom.
+services:
+  user-service:
+    port: 8001
+    replicas: 2
+    env:
+      - name: DB_URL
+        value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/users?sslmode=disable
+  product-service:
+    port: 8002
+    replicas: 2
+    env:
+      - name: DB_URL
+        value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/products?sslmode=disable
+  order-service:
+    port: 8003
+    replicas: 2
+    env:
+      - name: DB_URL
+        value: postgresql+asyncpg://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/orders
+  cart-service:
+    port: 8004
+    replicas: 2
+  search-service:
+    port: 8005
+    replicas: 2
+  review-service:
+    port: 8006
+    replicas: 2
+  notification-service:
+    replicas: 1
+  storefront:
+    port: 3000
+    replicas: 2
+    env:
+      # Public URLs, used by the browser. Set to your domain.
+      - name: NEXT_PUBLIC_USER_SERVICE_URL
+        value: http://user.YOUR_DOMAIN
+      - name: NEXT_PUBLIC_PRODUCT_SERVICE_URL
+        value: http://product.YOUR_DOMAIN
+      - name: NEXT_PUBLIC_ORDER_SERVICE_URL
+        value: http://order.YOUR_DOMAIN
+      - name: NEXT_PUBLIC_CART_SERVICE_URL
+        value: http://cart.YOUR_DOMAIN
+      - name: NEXT_PUBLIC_SEARCH_SERVICE_URL
+        value: http://search.YOUR_DOMAIN
+      - name: NEXT_PUBLIC_REVIEW_SERVICE_URL
+        value: http://review.YOUR_DOMAIN
+      # Internal URLs for server-side calls, mapped from the shared config.
+      - name: INTERNAL_PRODUCT_SERVICE_URL
+        valueFrom:
+          configMapKeyRef:
+            name: stackshop-config
+            key: PRODUCT_SERVICE_URL
+      - name: INTERNAL_SEARCH_SERVICE_URL
+        valueFrom:
+          configMapKeyRef:
+            name: stackshop-config
+            key: SEARCH_SERVICE_URL
+
+# One entry per hostname. The domain is appended by the ingress template.
+ingressHosts:
+  - host: stackshop
+    service: storefront
+    port: 3000
+  - host: user
+    service: user-service
+    port: 8001
+  - host: product
+    service: product-service
+    port: 8002
+  - host: order
+    service: order-service
+    port: 8003
+  - host: cart
+    service: cart-service
+    port: 8004
+  - host: search
+    service: search-service
+    port: 8005
+  - host: review
+    service: review-service
+    port: 8006
