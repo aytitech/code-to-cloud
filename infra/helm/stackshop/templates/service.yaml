@@ -1,0 +1,14 @@
+# TODO: write this template.
+#
+# It must render one Service for each entry in .Values.services,
+# and skip any service that has no port (notification-service).
+#
+# This is the same pattern as deployment.yaml:
+#   - range over the services map to get the service name and its values
+#   - guard the body with "if the service has a port"
+#   - set name and namespace
+#   - selector: app is the service name
+#   - a single port, with port and targetPort both equal to the service port
+#
+# Look at deployment.yaml. It does exactly this for Deployments.
+# Copy its shape and produce a Service instead.

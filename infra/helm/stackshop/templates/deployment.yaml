@@ -1,0 +1,46 @@
+{{- range $name, $svc := .Values.services }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Values.namespace }}
+spec:
+  replicas: {{ $svc.replicas }}
+  selector:
+    matchLabels:
+      app: {{ $name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $name }}
+    spec:
+      containers:
+        - name: {{ $name }}
+          image: "{{ $.Values.image.registry }}/{{ $.Values.image.username }}/{{ $name }}:{{ $.Values.image.tag }}"
+{{- if $svc.port }}
+          ports:
+            - containerPort: {{ $svc.port }}
+{{- end }}
+{{- if or $svc.port $svc.env }}
+          env:
+{{- if $svc.port }}
+            - name: PORT
+              value: {{ $svc.port | quote }}
+{{- end }}
+{{- range $svc.env }}
+            - name: {{ .name }}
+{{- if .value }}
+              value: {{ .value | quote }}
+{{- else }}
+              valueFrom:
+{{ toYaml .valueFrom | indent 14 }}
+{{- end }}
+{{- end }}
+{{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ $.Values.configMapName }}
+            - secretRef:
+                name: {{ $.Values.secretName }}
+{{- end }}
