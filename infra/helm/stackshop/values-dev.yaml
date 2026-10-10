@@ -1,0 +1,20 @@
+# Development environment - minimal footprint.
+# Helm deep-merges maps, so only the values that differ need to appear here.
+
+services:
+  user-service:
+    replicas: 1
+  product-service:
+    replicas: 1
+  order-service:
+    replicas: 1
+  cart-service:
+    replicas: 1
+  search-service:
+    replicas: 1
+  review-service:
+    replicas: 1
+  notification-service:
+    replicas: 1
+  storefront:
+    replicas: 1
