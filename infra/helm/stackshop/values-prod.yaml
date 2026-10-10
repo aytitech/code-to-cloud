@@ -1,0 +1,20 @@
+# Production environment.
+# Same chart, same templates. Only the values differ.
+
+services:
+  user-service:
+    replicas: 3
+  product-service:
+    replicas: 3
+  order-service:
+    replicas: 3
+  cart-service:
+    replicas: 2
+  search-service:
+    replicas: 2
+  review-service:
+    replicas: 2
+  notification-service:
+    replicas: 1
+  storefront:
+    replicas: 3
