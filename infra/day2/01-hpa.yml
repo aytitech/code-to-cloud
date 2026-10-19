@@ -1,0 +1,10 @@
+# TODO: write this HorizontalPodAutoscaler.
+#
+# Scale the user-service Deployment automatically based on CPU.
+#
+# The HPA should:
+#   - target the user-service Deployment
+#   - keep between 2 and 10 replicas
+#   - aim for 70 percent average CPU utilization
+#
+# apiVersion is autoscaling/v2.
