@@ -1,0 +1,8 @@
+# TODO: write this VirtualService.
+#
+# It must split traffic to product-service between two subsets:
+#   - 90 percent to v1
+#   - 10 percent to v2
+#
+# The DestinationRule in 02-destinationrule.yml already defines v1 and v2.
+# Weights must add up to 100.
