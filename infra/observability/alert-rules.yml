@@ -1,15 +1,20 @@
-# TODO: write one alert rule.
-#
-# Fire when a StackShop Deployment has zero ready replicas for over a minute.
-#
-# Expression:
-#   sum(kube_deployment_status_replicas_ready{namespace="stackshop"}) by (deployment) == 0
-#
-# Add:
-#   - alert name: StackShopServiceDown
-#   - for: 1m (wait a minute before firing)
-#   - labels: severity: critical
-#   - annotations: a summary and a description using the deployment label
-#
-# The object is a PrometheusRule, namespace default,
-# with a label "release: monitoring" so the chart's Prometheus picks it up.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: stackshop-alerts
+  namespace: default
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: stackshop
+      rules:
+        - alert: StackShopServiceDown
+          expr: sum(kube_deployment_status_replicas_ready{namespace="stackshop"}) by (deployment) == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.deployment }} has no ready replicas"
+            description: "{{ $labels.deployment }} in stackshop has been down for over a minute."
+
