@@ -1,0 +1,10 @@
+grafana:
+  adminPassword: admin
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+
+defaultRules:
+  create: false
