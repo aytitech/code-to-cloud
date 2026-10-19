@@ -1,0 +1,15 @@
+# TODO: write one alert rule.
+#
+# Fire when a StackShop Deployment has zero ready replicas for over a minute.
+#
+# Expression:
+#   sum(kube_deployment_status_replicas_ready{namespace="stackshop"}) by (deployment) == 0
+#
+# Add:
+#   - alert name: StackShopServiceDown
+#   - for: 1m (wait a minute before firing)
+#   - labels: severity: critical
+#   - annotations: a summary and a description using the deployment label
+#
+# The object is a PrometheusRule, namespace default,
+# with a label "release: monitoring" so the chart's Prometheus picks it up.
