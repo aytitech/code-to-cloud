@@ -1,10 +1,26 @@
-# TODO: write this NetworkPolicy.
-#
-# Lock down the Postgres pods so only the three services that need them
-# can reach port 5432: user-service, product-service, order-service.
-#
-# The policy should:
-#   - select pods with label app=postgres
-#   - allow ingress only from those three services, only on TCP 5432
-#
-# Everyone else is denied by default.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgres-deny-external
+  namespace: stackshop
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: user-service
+        - podSelector:
+            matchLabels:
+              app: product-service
+        - podSelector:
+            matchLabels:
+              app: order-service
+      ports:
+        - protocol: TCP
+          port: 5432
+
