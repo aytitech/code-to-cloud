@@ -1,0 +1,10 @@
+# TODO: write this NetworkPolicy.
+#
+# Lock down the Postgres pods so only the three services that need them
+# can reach port 5432: user-service, product-service, order-service.
+#
+# The policy should:
+#   - select pods with label app=postgres
+#   - allow ingress only from those three services, only on TCP 5432
+#
+# Everyone else is denied by default.
